@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Complete Offer to Get Your Key</title>
+    <script src="https://publisher.linkvertise.com/cdn/linkvertise.js"></script>
+    <script>
+        // Get the Discord user ID from the URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('user_id');
+
+        // If no user ID is provided, show an error
+        if (!userId) {
+            document.body.innerHTML = '<h2>Error: Missing user ID. Please use the link from Discord.</h2>';
+        } else {
+            // When the user completes the offer, this function will be called
+            window.linkvertise.onComplete = function() {
+                // Call your API to generate the key
+                fetch('https://key-api-main.onrender.com/claim/mobscripts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        device_id: 'discord'  // optional, just to satisfy the endpoint
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.key) {
+                        // Show the key to the user
+                        document.body.innerHTML = `<h2>✅ Key generated!</h2><p>Your key: <strong>${data.key}</strong></p><p>Copy this key and use it in the Discord panel.</p>`;
+                    } else {
+                        document.body.innerHTML = '<h2>❌ Error generating key. Please contact support.</h2>';
+                    }
+                })
+                .catch(err => {
+                    document.body.innerHTML = '<h2>❌ Error contacting server. Please try again.</h2>';
+                });
+            };
+
+            // Initialize Linkvertise with your campaign ID
+            linkvertise(YOUR_LINKVERTISE_ID, {
+                whitelist: [],
+                blacklist: []
+            });
+        }
+    </script>
+</head>
+<body>
+    <p>Loading offer... Please wait.</p>
+</body>
+</html>
