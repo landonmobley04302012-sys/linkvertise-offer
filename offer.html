@@ -1,51 +1,117 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Complete Offer to Get Your Key</title>
-    <script src="https://publisher.linkvertise.com/cdn/linkvertise.js"></script>
-    <script>
-        // Get the Discord user ID from the URL parameter
-        const urlParams = new URLSearchParams(window.location.search);
-        const userId = urlParams.get('user_id');
-
-        // If no user ID is provided, show an error
-        if (!userId) {
-            document.body.innerHTML = '<h2>Error: Missing user ID. Please use the link from Discord.</h2>';
-        } else {
-            // When the user completes the offer, this function will be called
-            window.linkvertise.onComplete = function() {
-                // Call your API to generate the key
-                fetch('https://key-api-main.onrender.com/claim/mobscripts', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        user_id: userId,
-                        device_id: 'discord'  // optional, just to satisfy the endpoint
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.key) {
-                        // Show the key to the user
-                        document.body.innerHTML = `<h2>✅ Key generated!</h2><p>Your key: <strong>${data.key}</strong></p><p>Copy this key and use it in the Discord panel.</p>`;
-                    } else {
-                        document.body.innerHTML = '<h2>❌ Error generating key. Please contact support.</h2>';
-                    }
-                })
-                .catch(err => {
-                    document.body.innerHTML = '<h2>❌ Error contacting server. Please try again.</h2>';
-                });
-            };
-
-            // Initialize Linkvertise with your campaign ID
-            linkvertise(4622724, {
-                whitelist: [],
-                blacklist: []
-            });
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claim Your Key</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1e1e2f;
+            color: #eee;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
         }
-    </script>
+        .container {
+            background: #2d2d44;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        h1 {
+            margin-top: 0;
+            color: #ffaa44;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background: #3b3b5c;
+            color: #fff;
+            font-size: 1rem;
+            box-sizing: border-box;
+            margin: 10px 0;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background: #5a6e9e;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #6e85b5;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background: #3b3b5c;
+            border-radius: 8px;
+            word-break: break-all;
+        }
+        .error {
+            color: #ff8888;
+        }
+        .success {
+            color: #88ff88;
+        }
+    </style>
 </head>
 <body>
-    <p>Loading offer... Please wait.</p>
+<div class="container">
+    <h1>🔑 Claim Your Key</h1>
+    <div id="message"></div>
+    <div id="input-area">
+        <input type="text" id="codeInput" placeholder="Enter your code here" />
+        <button id="submitBtn">Claim Key</button>
+    </div>
+    <div id="result" class="result"></div>
+</div>
+
+<script>
+    const API_BASE = 'https://key-api-main.onrender.com';  // Replace with your actual Render URL if different
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+
+    async function claimWithCode(code) {
+        const response = await fetch(`${API_BASE}/claim-with-code`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code, device_id: 'web' })
+        });
+        const data = await response.json();
+        if (data.key) {
+            document.getElementById('result').innerHTML = `<p class="success">✅ Your key: <strong>${data.key}</strong></p><p>Copy this key and use it in the Roblox script.</p>`;
+            document.getElementById('input-area').style.display = 'none';
+        } else {
+            document.getElementById('result').innerHTML = `<p class="error">❌ ${data.error || 'Invalid or expired code'}</p>`;
+        }
+    }
+
+    if (code) {
+        document.getElementById('input-area').style.display = 'none';
+        document.getElementById('message').innerHTML = '<p>Processing your code... Please wait.</p>';
+        claimWithCode(code);
+    } else {
+        document.getElementById('submitBtn').onclick = () => {
+            const inputCode = document.getElementById('codeInput').value.trim();
+            if (!inputCode) return;
+            claimWithCode(inputCode);
+        };
+    }
+</script>
 </body>
 </html>
