@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Claim Your Key</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; margin-top: 50px; background: #1e1e2f; color: #eee; }
+        .container { max-width: 500px; margin: auto; background: #2d2d44; padding: 2rem; border-radius: 16px; }
+        input, button { padding: 10px; margin: 10px; width: 80%; border-radius: 8px; border: none; }
+        button { background: #5a6e9e; color: white; cursor: pointer; }
+        button:hover { background: #6e85b5; }
+        #result { margin-top: 20px; font-weight: bold; word-break: break-all; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🔑 Claim Your Key</h1>
+    <div id="message"></div>
+    <div id="input-area">
+        <input type="text" id="codeInput" placeholder="Enter your code here" />
+        <button id="submitBtn">Claim Key</button>
+    </div>
+    <div id="result"></div>
+</div>
+
+<script>
+    const API_BASE = 'https://key-api-main.onrender.com';
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    const deviceId = 'web'; // dummy
+
+    async function claimWithCode(code) {
+        const response = await fetch(`${API_BASE}/claim-with-code`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code, device_id: deviceId })
+        });
+        const data = await response.json();
+        if (data.key) {
+            document.getElementById('result').innerHTML = `<p>✅ Your key: <strong>${data.key}</strong></p><p>Copy this key and use it in the Roblox UI.</p>`;
+            document.getElementById('input-area').style.display = 'none';
+        } else {
+            document.getElementById('result').innerHTML = `<p>❌ ${data.error || 'Invalid code'}</p>`;
+        }
+    }
+
+    if (code) {
+        document.getElementById('input-area').style.display = 'none';
+        claimWithCode(code);
+    } else {
+        document.getElementById('submitBtn').onclick = () => {
+            const code = document.getElementById('codeInput').value.trim();
+            if (!code) return;
+            claimWithCode(code);
+        };
+    }
+</script>
+</body>
+</html>
