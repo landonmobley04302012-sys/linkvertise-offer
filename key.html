@@ -26,7 +26,7 @@
     const API_BASE = 'https://key-api-main.onrender.com';
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
-    const deviceId = 'web'; // dummy
+    const deviceId = 'web';
 
     async function claimWithCode(code) {
         const response = await fetch(`${API_BASE}/claim-with-code`, {
