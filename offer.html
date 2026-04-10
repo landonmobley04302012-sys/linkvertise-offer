@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Complete Offer to Get Your Key</title>
-    <script src="https://publisher.linkvertise.com/cdn/linkvertise.js"></script>
+    <title>Redirecting to Offer</title>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const userId = urlParams.get('user_id');
@@ -11,33 +10,14 @@
         if (!userId || !code) {
             document.body.innerHTML = '<h2>Error: Missing user ID or code. Please use the link from Discord.</h2>';
         } else {
-            // Wait for the offer to complete
-            window.linkvertise.onComplete = function() {
-                // Call your API to generate the key
-                fetch('https://key-api-main.onrender.com/claim-with-code', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ code: code, device_id: 'discord' })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.key) {
-                        document.body.innerHTML = `<h2>✅ Key generated!</h2><p>Your key: <strong>${data.key}</strong></p><p>Copy this key and use it in the Discord panel or Roblox UI.</p>`;
-                    } else {
-                        document.body.innerHTML = `<h2>❌ Error: ${data.error || 'Unknown error'}</h2>`;
-                    }
-                })
-                .catch(err => {
-                    document.body.innerHTML = '<h2>❌ Error contacting server. Please try again.</h2>';
-                });
-            };
-
-            // Initialize Linkvertise with your campaign ID
-            linkvertise(4622724, { whitelist: [], blacklist: [] });
+            // Store the code temporarily (optional, but useful)
+            localStorage.setItem('pendingCode', code);
+            // Redirect to Linkvertise offer
+            window.location.href = 'https://link-center.net/4622724/bsUCFRC0QrKk';
         }
     </script>
 </head>
 <body>
-    <p>Loading offer... Please wait and complete the tasks to get your key.</p>
+    <p>Redirecting to offer page...</p>
 </body>
 </html>
